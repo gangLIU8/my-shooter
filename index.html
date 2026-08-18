@@ -615,18 +615,13 @@ function draw() {
           const cy = p.y + p.height / 2;
           ctx.save();
           ctx.translate(cx, cy);
-          ctx.shadowBlur = 20;
-          ctx.shadowColor = '#58d6ff';
-          ctx.fillStyle = 'rgba(88, 214, 255, 0.18)';
+          ctx.fillStyle = '#58d6ff';
           ctx.beginPath();
           ctx.ellipse(0, 0, p.width * 0.8, p.height * 0.9, 0, 0, Math.PI * 2);
           ctx.fill();
-
-          ctx.shadowBlur = 0;
           ctx.strokeStyle = '#8cf3ff';
           ctx.lineWidth = 2;
           ctx.strokeRect(-p.width / 2 + 2, -p.height / 2 + 2, p.width - 4, p.height - 4);
-
           ctx.fillStyle = '#8cf3ff';
           ctx.fillRect(-3, -p.height * 0.35, 6, p.height * 0.7);
           ctx.fillRect(-p.width * 0.35, -3, p.width * 0.7, 6);
@@ -634,8 +629,8 @@ function draw() {
           ctx.fillRect(-p.width * 0.15, -p.height * 0.15, p.width * 0.3, p.height * 0.3);
           ctx.restore();
       } else {
-          if (medalImage.complete && medalImage.naturalWidth > 0) { ctx.drawImage(medalImage, p.x, p.y, p.width, p.height); } 
-          else { ctx.fillStyle = '#ffd700'; ctx.shadowBlur = 20; ctx.shadowColor = '#ffd700'; ctx.fillRect(p.x, p.y, p.width, p.height); ctx.shadowBlur = 0; }
+          if (medalImage.complete && medalImage.naturalWidth > 0) { ctx.drawImage(medalImage, p.x, p.y, p.width, p.height); }
+          else { ctx.fillStyle = '#ffd700'; ctx.fillRect(p.x, p.y, p.width, p.height); }
       }
   });
 
@@ -649,15 +644,14 @@ function draw() {
               ctx.drawImage(b.sprite, -b.width/2, -b.height/2, b.width, b.height);
               ctx.restore();
           } else {
-              ctx.fillStyle = '#ff6347'; ctx.shadowBlur = 20; ctx.shadowColor = '#ff6347'; ctx.beginPath(); ctx.arc(b.x+4, b.y+4, 6, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0;
+              ctx.fillStyle = '#ff6347'; ctx.beginPath(); ctx.arc(b.x+4, b.y+4, 6, 0, Math.PI*2); ctx.fill();
           }
       } else {
-          const gradient = ctx.createLinearGradient(b.x, b.y, b.x, b.y + b.height); gradient.addColorStop(0, 'rgba(0, 255, 255, 1)'); gradient.addColorStop(1, 'rgba(0, 100, 255, 0.1)'); ctx.fillStyle = gradient; ctx.shadowBlur = 30; ctx.shadowColor = '#00ffff'; ctx.fillRect(b.x, b.y, b.width, b.height); ctx.shadowBlur = 0; ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 1; ctx.strokeRect(b.x, b.y, b.width, b.height);
+          const gradient = ctx.createLinearGradient(b.x, b.y, b.x, b.y + b.height); gradient.addColorStop(0, 'rgba(0, 255, 255, 1)'); gradient.addColorStop(1, 'rgba(0, 100, 255, 0.1)'); ctx.fillStyle = gradient; ctx.fillRect(b.x, b.y, b.width, b.height); ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 1; ctx.strokeRect(b.x, b.y, b.width, b.height);
       }
   });
 
   enemies.forEach(e => {
-      ctx.shadowBlur = 10; ctx.shadowColor = '#ff6b81';
       if (enemyImage.complete && enemyImage.naturalWidth > 0) {
           ctx.drawImage(enemyImage, e.x, e.y, e.width, e.height);
       } else {
@@ -679,8 +673,6 @@ function draw() {
       const pulseRadius = 4 + Math.sin(eb.pulse) * 2;
       ctx.beginPath();
       ctx.fillStyle = eb.hue;
-      ctx.shadowBlur = eb.glow;
-      ctx.shadowColor = eb.hue;
       ctx.arc(eb.x, eb.y, pulseRadius, 0, Math.PI * 2);
       ctx.fill();
 
@@ -688,7 +680,6 @@ function draw() {
       ctx.fillStyle = '#fff2b2';
       ctx.arc(eb.x, eb.y, 2, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowBlur = 0;
   });
 
   // 绘制 boss
@@ -742,13 +733,13 @@ function draw() {
           ctx.drawImage(explosionFrames[frameIndex], p.x - p.width/2, p.y - p.height/2, p.width, p.height);
           ctx.globalAlpha = 1.0;
       } else {
-          ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.shadowBlur = 15; ctx.shadowColor = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius * p.life, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius * p.life, 0, Math.PI * 2); ctx.fill();
       }
   });
   ctx.globalAlpha = 1.0;
 
   if (!gameOver) drawPlayer();
-  ctx.shadowBlur = 0; ctx.fillStyle = 'white'; ctx.font = '20px Arial';
+  ctx.fillStyle = 'white'; ctx.font = '20px Arial';
   ctx.fillText('得分: ' + score, 10, 30);
 
   // 导弹库存显示
@@ -774,12 +765,9 @@ function draw() {
   const dangerPulse = lowHealth ? 0.55 + 0.45 * Math.sin(performance.now() * 0.014) : 1;
 
   ctx.save();
-  ctx.shadowColor = lowHealth ? 'rgba(255, 70, 70, 0.9)' : 'rgba(255, 95, 109, 0.7)';
-  ctx.shadowBlur = lowHealth ? 18 : 12;
   ctx.fillStyle = 'rgba(15, 20, 35, 0.8)';
   roundRect(ctx, hpBarX, hpBarY, hpBarW, hpBarH, 10);
   ctx.fill();
-  ctx.shadowBlur = 0;
 
   const fillW = hpRatio * (hpBarW - 8);
   const fillX = hpBarX + 4;
@@ -808,7 +796,6 @@ function draw() {
 
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 12px Arial';
-  ctx.shadowBlur = 0;
   ctx.fillText('HP', hpBarX - 26, hpBarY + 14);
 
   ctx.fillStyle = lowHealth ? '#ffb3b3' : '#ffd166';
@@ -825,10 +812,9 @@ function draw() {
         ctx.drawImage(gameOverImage, 50, 250, 300, 120); 
         ctx.globalAlpha = 1.0;
         if (fadeInProgress >= 1) {
-            ctx.fillStyle = '#2ed573'; ctx.shadowBlur = 20; ctx.shadowColor = '#2ed573';
+            ctx.fillStyle = '#2ed573';
             roundRect(ctx, 45, 390, 110, 60, 14); ctx.fill();
             roundRect(ctx, 245, 390, 110, 60, 14); ctx.fill();
-            ctx.shadowBlur = 0;
 
             ctx.fillStyle = '#ffffff'; ctx.font = 'bold 20px Arial'; ctx.textAlign = 'center';
             ctx.fillText('复活', 100, 430);
