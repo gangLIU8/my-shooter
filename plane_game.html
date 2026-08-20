@@ -54,7 +54,7 @@ window.addEventListener('resize', resizeCanvas);
 canvas.style.touchAction = 'none';
 
 // ===== 2. 全局状态与资源加载 =====
-const player = { x: 175, y: 620, width: 50, height: 50, speed: 5, health: 4, maxHealth: 4, invincible: 0, hitFlash: 0 };
+const player = { x: 175, y: 620, width: 50, height: 50, speed: 5, health: 5, maxHealth: 5, invincible: 0, hitFlash: 0 };
 let bullets = [], enemies = [], particles = [], stars = [], powerups = [];
 let score = 0, gameOver = false, hasMissile = false;
 let missileStock = 0;
@@ -404,8 +404,9 @@ function update() {
 
   for (let i = bullets.length - 1; i >= 0; i--) {
     let b = bullets[i];
-    if (b.isMissile && b.target) {
-        if (!enemies.includes(b.target)) { b.target = enemies.length > 0 ? enemies[0] : null; }
+    if (b.isMissile) {
+        // 原目标已被摧毁时尝试重新锁定；若完全没有敌机，就改为直线上升，不再静止卡在空中
+        if (b.target && !enemies.includes(b.target)) { b.target = enemies.length > 0 ? enemies[0] : null; }
         if (b.target) {
             let dx = b.target.x - b.x; let dy = b.target.y - b.y;
             let angle = Math.atan2(dy, dx);
@@ -418,6 +419,17 @@ function update() {
                 const speed = 0.4 + Math.random() * 1.0;
                 const vx = -Math.cos(angle) * speed + (Math.random() - 0.5) * 0.6;
                 const vy = -Math.sin(angle) * speed + (Math.random() - 0.5) * 0.6;
+                particles.push({ x: tailX, y: tailY, vx: vx, vy: vy, radius: 1 + Math.random() * 2, life: 0.4 + Math.random() * 0.5, decay: 0.02 + Math.random() * 0.03, color: Math.random() > 0.4 ? '#ff8c00' : '#ffff66' });
+            }
+        } else if (!b.target) {
+            // 无目标可锁定：导弹沿直线向上飞行，机头保持朝上
+            b.y -= b.speed;
+            b.angle = -Math.PI/2;
+            const tailX = b.x + b.width/2;
+            const tailY = b.y + b.height/2 + b.height/2;
+            for (let t = 0; t < 2; t++) {
+                const vx = (Math.random() - 0.5) * 0.6;
+                const vy = 0.4 + Math.random() * 1.0;
                 particles.push({ x: tailX, y: tailY, vx: vx, vy: vy, radius: 1 + Math.random() * 2, life: 0.4 + Math.random() * 0.5, decay: 0.02 + Math.random() * 0.03, color: Math.random() > 0.4 ? '#ff8c00' : '#ffff66' });
             }
         }
@@ -559,7 +571,7 @@ function update() {
               playHealSound();
               for(let j=0; j<18; j++) { particles.push({ x: p.x+10, y: p.y+10, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, radius: 3, life: 0.8, decay: 0.03, color: '#8cf3ff' }); }
           } else {
-              missileStock += 1;
+              missileStock += 2; // 一个金币（奖牌）产生两发导弹
               hasMissile = true;
               playTone({ frequency: 740, duration: 0.12, type: 'triangle', volume: 0.08, sweep: 120 });
               playTone({ frequency: 1100, duration: 0.16, type: 'sine', volume: 0.06, sweep: 180, delay: 0.05 });
